@@ -1,20 +1,39 @@
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { useEffect, useState } from 'react';
+import { StyleSheet, Text, TouchableOpacity, View, FlatList } from 'react-native';
 
+import API from '../../api';
 import Item from '../Components/Item';
 
-export default function Login() {
+import AddIcon from '../../icons/add-line.svg'
+
+export default function Home() {
+  const [data, setData] = useState({});
+
+  useEffect(()=>{
+    async function GetData(){
+      try {
+        const response = await API.get("/itens");
+        console.log(response)
+      }catch (error) {
+        console.log(JSON.stringify(error))
+      }
+    }
+
+    GetData();
+  },[])
+
   return (
     <View style={styles.container}>
         <View style={styles.header}>
             <Text style={styles.title}>Minhas Instalações</Text>
             <TouchableOpacity style={styles.button}>
-                <Text style={{color: 'white'}}>+</Text>
+                <AddIcon width={28} height={28} fill="#000" />
             </TouchableOpacity>
         </View>
 
-        <View style={styles.itemArea}>
-          <Item />
-        </View>
+        <FlatList data={data} style={styles.itemArea} renderItem={({item}) => {
+          <Item key={item.key} name={item.name} data={item.data} status={item.status} />}
+        }/>
 
     </View>
   );
@@ -27,7 +46,7 @@ const styles = StyleSheet.create({
   },
   header:{
     flexDirection:'row',
-    marginTop: 32,
+    marginTop: '12%',
     
     alignItems: 'center',
 
@@ -43,19 +62,11 @@ const styles = StyleSheet.create({
     fontWeight: 'bold'
   },
   button:{
-    marginRight: 8,
-
-    backgroundColor: 'black',
-
-    width: 24,
-    height: 24,
-    borderRadius: 5,
+    marginRight: 12,
 
     alignItems: 'center'
   },
-  itemArea:{
-    alignItems: 'center',
-    
+  itemArea:{    
     flex: 1,
 
     marginTop: 15
