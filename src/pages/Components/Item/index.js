@@ -5,15 +5,16 @@ import { SvgUri } from 'react-native-svg';
 import DeleteTrash from '../../../icons/delete-bin-fill.svg';
 import SyncIcon from '../../../icons/refresh-line.svg'
 
-export default function Item(name, data, status) {
+export default function Item({name, data, status}) {
     const navigation = useNavigation();
 
     return (
+        <TouchableOpacity>
         <View style={styles.container}>
             <View style={styles.descriptionArea}>
-                <Text style={styles.description}>Nome: Lorem Ipsum</Text>
-                <Text style={styles.description}>Data: 04/10/2022</Text>
-                <Text style={styles.description}>Sincronizado: Não</Text>
+                <Text style={styles.description}>Nome: {name}</Text>
+                <Text style={styles.description}>Data: {data} </Text>
+                <Text style={styles.description}>Sincronizado: {status}</Text>
             </View>
 
             <TouchableOpacity>
@@ -23,6 +24,8 @@ export default function Item(name, data, status) {
                 <SyncIcon width={28} height={28} fill="#00386D" />
             </TouchableOpacity>
         </View>
+        </TouchableOpacity>
+
     );
 }
 
@@ -30,10 +33,10 @@ const styles = StyleSheet.create({
   container: {
     backgroundColor: '#DDD',
     width: '95%',
-    height: '8%',
+    height: 75,
 
     marginTop: 10,
-
+    marginLeft: 8,
     borderRadius: 10,
 
     padding: 5,
