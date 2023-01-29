@@ -28,7 +28,7 @@ export default function Home() {
     <View style={styles.container}>
         <View style={styles.header}>
             <Text style={styles.title}>Minhas Instalações</Text>
-            <TouchableOpacity style={styles.button} onPress={() => {navigation.navigate("NovoItem")}}>
+            <TouchableOpacity style={styles.button} onPress={() => {navigation.navigate("NovoItem", { newItem: setData()})} }>
                 <AddIcon width={28} height={28} fill="#000" />
             </TouchableOpacity>
         </View>
