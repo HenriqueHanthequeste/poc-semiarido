@@ -1,11 +1,13 @@
 import { cloneElement, useEffect, useState } from 'react';
-import { StyleSheet, Text, TouchableOpacity, View, FlatList, TextInput, Image, Modal } from 'react-native';
+import { StyleSheet, Text, TouchableOpacity, View, ScrollView, TextInput, Image, Modal } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 
 import { Camera } from 'expo-camera';
 
 import BackIcon from '../../icons/arrow-left-line.svg'
 import CameraIcon from '../../icons/camera-line.svg'
+import tmbn from '../../icons/tmbn.jpg'
+import AddPhoto from '../../icons/camera-add.svg'
 
 export default function NovoItem({route}) {
   const { setData } = route.params;
@@ -19,9 +21,12 @@ export default function NovoItem({route}) {
   const [open, setOpen] = useState(false);
   const [item, setItem] = useState({})
 
+  const data =[
+    'abobra',
+  ]
+
   const [permission, setPermission] = Camera.useCameraPermissions();
 
-  var imagesArray = []
   useEffect(()=>{
     async function getPermissions(){
         const cameraStatus = await Camera.requestCameraPermissionsAsync();
@@ -32,8 +37,8 @@ export default function NovoItem({route}) {
     }
 
     getPermissions();
-    console.log(item?.photos)
-  },[item])
+    console.log(images)
+  },[images])
 
   async function ToggleCamera(){
 
@@ -43,7 +48,7 @@ export default function NovoItem({route}) {
   const takePicture = async () => {
     if(camera){
         const data = await camera.takePictureAsync(null)
-        console.log(data.uri)
+        // console.log(data.uri)
         setImage(data.uri);
         setOpen(true)
     }
@@ -51,10 +56,10 @@ export default function NovoItem({route}) {
 
   const handleSave = () => {
     setImages(images => [...images, image]);
-    // imagesArray.push(imagesArray)
 
-    setItem(values => ({...values, photos:{images}}))
+    // setItem(values => ({...values, photos:{images}}))
     setOpen(false);
+    ToggleCamera();
   }
 
   const cancelPicture = async () => {
@@ -79,12 +84,18 @@ export default function NovoItem({route}) {
                 <TextInput style={styles.input} placeholder="Obs" onChangeText={(e) => setItem(values => ({...values, obs: e}))}/>
             </View>
             <View style={{flexDirection: 'row', marginTop: 20, justifyContent: 'space-between'}}>
-                <Text style={{...styles.title}}>Adicionar Fotos</Text>
+                <Text style={{...styles.title}}>Fotos</Text>
 
-                <TouchableOpacity style={{marginRight: 15, justifyContent: 'center'}} onPress={() => {ToggleCamera()}}>
-                    <CameraIcon width={28} height={28} fill="#000" />
-                </TouchableOpacity>
             </View>
+            <ScrollView contentContainerStyle={{ flexDirection:'row', flexWrap: 'wrap'}} style={{width: '100%'}}>
+                {images.map((item, index) => <Image key={index} source={data[0]} style={{width:100, height:100, marginLeft: 10, marginBottom: 10, alignSelf: 'center'}} />)}
+                <TouchableOpacity  onPress={() => {ToggleCamera()}} style={{width: 100, height: 100, marginLeft: 10, marginTop: 5, justifyContent: 'center', alignItems: 'center', backgroundColor: '#DDDD', borderRadius: 10}}>
+                    <AddPhoto width={62} height={62} fill="#0000" />
+                </TouchableOpacity>
+            </ScrollView>
+                {/* <FlatList contentContainerStyle={{flexDirection: 'row', flexWrap: 'wrap'}} style={{height: '100%', width:'100%'}} data={images} keyExtractor={(item, index) => index} renderItem={
+                    ({item, index}) => <Image key={index} source={tmbn} style={{width:100, height:100}} />
+                }/> */}
         </View>)
         :
         (<View style={{flex:1, justifyContent: 'center', marginTop: 35, aspectRatio: 1}}>
