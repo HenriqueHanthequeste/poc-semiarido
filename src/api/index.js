@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const API = axios.create({
-    baseURL: "https://my-json-server.typicode.com/henriquehanthequeste/poc-semiarido",
+    baseURL: "http://10.0.2.2:4444/",
 });
 
 export default API;

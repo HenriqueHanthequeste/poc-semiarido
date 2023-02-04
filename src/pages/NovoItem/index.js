@@ -1,6 +1,9 @@
-import { cloneElement, useEffect, useState } from 'react';
-import { StyleSheet, Text, TouchableOpacity, View, ScrollView, TextInput, Image, Modal } from 'react-native';
+import { useEffect, useState } from 'react';
+import { StyleSheet, Text, TouchableOpacity, View, ScrollView, TextInput, Image, Modal, ActivityIndicator } from 'react-native';
+import * as FileSystem from 'expo-file-system';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/native';
+import uuid from 'react-native-uuid';
 
 import { Camera } from 'expo-camera';
 
@@ -20,10 +23,7 @@ export default function NovoItem({route}) {
   const [images, setImages] = useState([]);
   const [open, setOpen] = useState(false);
   const [item, setItem] = useState({})
-
-  const data =[
-    'abobra',
-  ]
+  const [isLoading, setIsLoading] = useState(false);
 
   const [permission, setPermission] = Camera.useCameraPermissions();
 
@@ -37,17 +37,49 @@ export default function NovoItem({route}) {
     }
 
     getPermissions();
-    console.log(images)
-  },[images])
+  },[])
 
   async function ToggleCamera(){
 
     setShowCamera(!showCamera)
   }
 
+  const storeData = async () => {
+    const obj = {
+        id: uuid.v4(),
+        ...item,
+        sync: false,
+        image:[
+            ...images   
+        ]
+    }
+    
+    try {
+        var array = []
+
+        var itens = await AsyncStorage.getItem('item')
+
+        if(itens){
+            array = JSON.parse(itens)
+        }
+        
+        array.push(obj)
+
+        await AsyncStorage.setItem('item', JSON.stringify(array))
+        
+    } catch (error) {
+        console.log(error)
+    }
+
+    navigation.navigate("Home")
+  }
+
   const takePicture = async () => {
     if(camera){
-        const data = await camera.takePictureAsync(null)
+        setIsLoading(true)
+        const data = await camera.takePictureAsync({skipProcessing: true})
+        setIsLoading(false)
+        
         // console.log(data.uri)
         setImage(data.uri);
         setOpen(true)
@@ -57,7 +89,6 @@ export default function NovoItem({route}) {
   const handleSave = () => {
     setImages(images => [...images, image]);
 
-    // setItem(values => ({...values, photos:{images}}))
     setOpen(false);
     ToggleCamera();
   }
@@ -73,10 +104,17 @@ export default function NovoItem({route}) {
          (
          <View>
             <View style={styles.header}>
-                <TouchableOpacity style={styles.button} onPress={() => {navigation.navigate("Home")}}>
-                    <BackIcon width={28} height={28} fill="#000" />
+                <View style={{flexDirection: 'row'}}>
+                    <TouchableOpacity style={styles.buttonBack} onPress={() => {navigation.navigate("Home")}}>
+                        <BackIcon width={28} height={28} fill="#000" />
+                    </TouchableOpacity>
+                    <Text style={styles.title3}>Nova Instalação</Text>
+                </View>
+
+
+                <TouchableOpacity style={styles.saveButton} onPress={() => {storeData()}}>
+                    <Text style={styles.saveTextButton}>Salvar</Text>
                 </TouchableOpacity>
-                <Text style={styles.title}>Nova Instalação</Text>
             </View>
             <View style={{alignItems: 'center'}}>
                 <TextInput style={styles.input} placeholder="Digite o nome da instalação" onChangeText={(e) => setItem(values => ({...values, name: e}))}/>
@@ -88,14 +126,11 @@ export default function NovoItem({route}) {
 
             </View>
             <ScrollView contentContainerStyle={{ flexDirection:'row', flexWrap: 'wrap'}} style={{width: '100%'}}>
-                {images.map((item, index) => <Image key={index} source={data[0]} style={{width:100, height:100, marginLeft: 10, marginBottom: 10, alignSelf: 'center'}} />)}
+                {images.map((item, index) => <Image key={index} source={{uri:item}} style={{width:100, height:100, marginLeft: 10, marginBottom: 10, alignSelf: 'center'}} />)}
                 <TouchableOpacity  onPress={() => {ToggleCamera()}} style={{width: 100, height: 100, marginLeft: 10, marginTop: 5, justifyContent: 'center', alignItems: 'center', backgroundColor: '#DDDD', borderRadius: 10}}>
                     <AddPhoto width={62} height={62} fill="#0000" />
                 </TouchableOpacity>
             </ScrollView>
-                {/* <FlatList contentContainerStyle={{flexDirection: 'row', flexWrap: 'wrap'}} style={{height: '100%', width:'100%'}} data={images} keyExtractor={(item, index) => index} renderItem={
-                    ({item, index}) => <Image key={index} source={tmbn} style={{width:100, height:100}} />
-                }/> */}
         </View>)
         :
         (<View style={{flex:1, justifyContent: 'center', marginTop: 35, aspectRatio: 1}}>
@@ -103,13 +138,16 @@ export default function NovoItem({route}) {
                 style={styles.fixedRatio} 
                 ratio={'4:3'} 
                 type={Camera.Constants.Type.back}
-                ref={ref => setCamera(ref)}> 
+                ref={ref => setCamera(ref)}
+                > 
+                
                 <View style={styles.buttonContainer}>
                     <TouchableOpacity style={styles.button} onPress={() => ToggleCamera()}>
                         <Text style={{color: 'white', fontSize: 18}}>Fechar</Text>
-                    </TouchableOpacity>  
-                    <TouchableOpacity style={styles.buttonCamera} onPress={() => takePicture()}>
-                        <CameraIcon width={48} height={48} fill="#000" />
+                    </TouchableOpacity>
+
+                     <TouchableOpacity style={styles.buttonCamera} onPress={() => takePicture()}>
+                     { isLoading ? <ActivityIndicator color="#000" size={48}/> :<CameraIcon width={48} height={48} fill="#000" />}
                     </TouchableOpacity>
                 </View>
             </Camera>
@@ -150,12 +188,21 @@ const styles = StyleSheet.create({
       fontSize: 22,
       fontWeight: 'bold'
     },
+    title3:{
+        color: '#000',
+    
+        marginLeft: 0,
+    
+        fontSize: 22,
+        fontWeight: 'bold'
+      },
     header:{
         flexDirection:'row',
         marginTop: '12%',
         
         alignItems: 'center',
-        marginLeft: 15
+        marginLeft: 15,
+        justifyContent: 'space-between'
     },
     input:{
         width: '90%',
@@ -186,7 +233,11 @@ const styles = StyleSheet.create({
 
     },
     button:{
-        flex: 0.1,
+        flex:0.1,
+        width: 50,
+        height: 20,        
+    },
+    buttonBack:{
         width: 50,
         height: 20,        
     },
@@ -222,6 +273,13 @@ const styles = StyleSheet.create({
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center'  
+    },
+    saveButton:{
+        marginRight: 15
+    },
+    saveTextButton:{
+        fontSize: 16,
+        fontWeight: 'bold'
     }
   });
 
