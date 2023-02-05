@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "635475865469",
+    "project_id": "poc-semiarido",
+    "storage_bucket": "poc-semiarido.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:635475865469:android:bb4f3847b7f55836fee614",
+        "android_client_info": {
+          "package_name": "semiarido.poc"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "635475865469-bgcc7493c0b0fa397bpjaiearkruflk4.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDExLYT2SxNMldHZUMavimRjQgbj8uKFDo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "635475865469-bgcc7493c0b0fa397bpjaiearkruflk4.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

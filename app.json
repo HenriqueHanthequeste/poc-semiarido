@@ -21,6 +21,8 @@
       "supportsTablet": true
     },
     "android": {
+      "package": "semiarido.poc",
+      "googleServicesFile": "./google-services.json",
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#FFFFFF"
@@ -28,6 +30,12 @@
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    }
+    },
+    "extra": {
+      "eas": {
+        "projectId": "29ab00ce-de78-4d4f-8a07-427631732649"
+      }
+    },
+    "owner": "hanthequeste"
   }
 }

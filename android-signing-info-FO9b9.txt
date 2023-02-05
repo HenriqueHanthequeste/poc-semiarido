@@ -1,0 +1,4 @@
+Keystore: android-FO9b9.keystore
+Keystore password: Henrique.04
+Key alias: demo
+Key password: Henrique.04
